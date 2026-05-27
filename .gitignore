@@ -1,0 +1,48 @@
+# Modelos y checkpoints
+checkpoints/
+*.pth
+*.pkl
+*.pt
+
+# Datos de entrada originales
+data/OK/
+data/Comp/
+data/clasificacion/
+data/segmentacion/images/
+data/segmentacion/masks/
+
+# Outputs del pipeline
+output/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+env/
+*.egg-info/
+
+# Archivos de datos grandes
+*.npy
+*.tif
+*.zip
+*.h5
+
+# Logs y resultados intermedios
+logs/
+results/
+*.log
+*.csv
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Label Studio
+label-studio-data/

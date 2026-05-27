@@ -1,0 +1,30 @@
+﻿paths:
+  rgb_tif: ../data/OK/RGB_BJSA/RGB_BJSA.tif
+  nir_tif: ../data/OK/NIR_BSJA/NIR_BSJA.tif
+  r_tif:   ../data/OK/R_BSJA/R_BSJA.tif
+  mde_tif: ../data/OK/MDE_BSJA/MDE_BSJA.tif
+  output_dir: ../output
+  sam_checkpoint: ../checkpoints/sam_vit_b_01ec64.pth
+
+tiling:
+  tile_size: 1024
+  overlap: 128
+  min_valid_pixels: 0.7   # minimum fraction of valid (non-nodata) pixels per tile
+
+sam:
+  model_type: vit_b
+  points_per_side: 32
+  pred_iou_thresh: 0.88
+  stability_score_thresh: 0.95
+  min_mask_area: 200        # minimum pixels per mask (~50px radius crown)
+  max_mask_area: 50000      # maximum pixels (avoids background masks)
+  device: cuda
+
+filter:
+  ndvi_min: 0.2             # minimum NDVI to consider vegetation
+  circularity_min: 0.3      # minimum circularity (tree crowns are roughly circular)
+  aspect_ratio_max: 3.0     # avoid very elongated masks
+  nms_iou_threshold: 0.5    # IoU threshold for NMS across overlapping tiles
+
+resolution: 0.05            # meters per pixel
+crop_padding: 10            # pixels of padding around bbox when cropping

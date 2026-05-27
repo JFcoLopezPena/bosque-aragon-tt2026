@@ -1,0 +1,61 @@
+﻿model:
+  model_type: vit_b
+  sam_checkpoint: ../checkpoints/sam_vit_b_01ec64.pth
+  r1_checkpoint: ../checkpoints/seg_finetuned/best_model.pth
+  num_classes: 2
+  use_mask_as_input: true
+  unfreeze_encoder_blocks: 2
+
+training:
+  batch_size: 4
+  learning_rate: 1.0e-5
+  weight_decay: 1.0e-3
+  num_epochs: 100
+  early_stopping_patience: 15
+  image_size: 256
+  mixed_precision: true
+  seed: 42
+  gradient_clip_max_norm: 1.0
+  class_weights: [1.0, 1.68]  # inverso de frecuencia normalizado: sano=62.7%, enfermo=37.3%
+
+data:
+  data_root: ../data/clasificacion
+  splits_file: ../output/splits_r2.json
+  num_workers: 0
+  pin_memory: true
+
+augmentation:
+  horizontal_flip: 0.5
+  vertical_flip: 0.5
+  random_rotate_90: 0.5
+  color_jitter:
+    brightness: 0.3
+    contrast: 0.3
+    saturation: 0.2
+  elastic_transform: 0.2
+  grid_distortion: 0.2
+
+loss:
+  focal_weight: 0.5
+  dice_weight: 0.5
+  focal_gamma: 2.0
+  focal_alpha: 0.5
+  use_roi_mask: true
+  roi_dilation_px: 5
+  cls_weight: 0.6
+  seg_weight: 0.4
+
+scheduler:
+  type: CosineAnnealingLR
+  T_max: 100
+  eta_min: 1.0e-7
+
+paths:
+  checkpoint_dir: ../checkpoints/cls_finetuned
+  logs_dir: ../logs/clasificacion
+  results_dir: ../results/clasificacion
+
+logging:
+  log_every_n_batches: 20
+  save_visualizations: true
+  num_viz_samples: 8

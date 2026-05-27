@@ -1,0 +1,67 @@
+﻿# SAM Fine-tuning - Ronda 1: Segmentacion de Copas de Arboles
+# Bosque de Aragon, CDMX
+
+model:
+  checkpoint_path: ../checkpoints/sam_vit_b_01ec64.pth
+  model_type: vit_b
+
+data:
+  images_dir: ../data/segmentacion/images
+  masks_dir:  ../data/segmentacion/masks
+  split_seed: 42
+  train_ratio: 0.70
+  val_ratio:   0.15
+  # test = 1 - train - val = 0.15
+  num_workers: 0        # 0 en Windows (multiprocessing con DataLoader)
+  pin_memory: true
+
+training:
+  batch_size: 2
+  learning_rate: 5.0e-5
+  weight_decay: 1.0e-4
+  num_epochs: 80
+  image_size: 512       # Dataset devuelve 512x512; train upscale a 1024 para SAM
+  mixed_precision: true
+  seed: 42
+  gradient_clip: 1.0
+  warmup_epochs: 3
+  unfreeze_encoder_blocks: 2   # Descongelar ultimos N bloques del image encoder
+
+augmentation:
+  horizontal_flip: 0.5
+  vertical_flip: 0.5
+  random_rotate90: 0.7
+  elastic_transform: 0.3
+  brightness_contrast: 0.4
+  blur: 0.2
+  random_resized_crop: 0.3
+  crop_scale_min: 0.7
+  crop_scale_max: 1.0
+
+loss:
+  focal_weight: 0.5
+  dice_weight: 0.5
+  focal_gamma: 2.0
+  focal_alpha: 0.50     # 0.5 = neutro; reduce over-prediction de copa
+  roi_dilation_px: 5    # Pixeles de dilatacion de GT mask para ROI del loss
+
+early_stopping:
+  patience: 12
+  min_delta: 0.002
+  monitor: val_iou      # Maximizar IoU de copa
+
+scheduler:
+  type: ReduceLROnPlateau
+  factor: 0.5
+  patience: 4
+  min_lr: 1.0e-7
+
+paths:
+  checkpoint_dir: ../checkpoints/seg_finetuned
+  logs_dir:       ../logs/segmentacion
+  results_dir:    ../results/segmentacion
+
+logging:
+  log_every_n_batches: 5
+  save_visualizations: true
+  num_viz_samples: 6
