@@ -12650,12 +12650,16 @@ const arbolLayer = L.layerGroup();
 const zonaLayer  = L.layerGroup();
 
 TREES.forEach(t => {
-  const [lat,lon,pri,prob,ndvi,area,tid] = t;
-  const r  = pri===0?5:(pri===1?3.5:2.5);
-  const c  = PRIO_COLORS[pri];
-  const ndviStr = ndvi>=0?(ndvi/1000).toFixed(3):"N/D";
-  const probStr = (prob/1000).toFixed(3);
-  const areaStr = area>=0?(area/10).toFixed(1)+" m2":"N/D";
+  var td = t;
+  var lat=td[0], lon=td[1], pri=td[2], prob=td[3], ndvi=td[4], area=td[5], tid=td[6];
+  var r  = pri===0?5:(pri===1?3.5:2.5);
+  var c  = PRIO_COLORS[pri];
+  var ndviStr = ndvi>=0?(ndvi/1000).toFixed(3):"N/D";
+  var probStr = (prob/1000).toFixed(3);
+  var areaStr = area>=0?(area/10).toFixed(1)+" m2":"N/D";
+  var zi = getZoneInfo(tid);
+  var zonaStr = "";
+  if (zi) { zonaStr = "<br><b style=\"color:"+zi.col+"\">#"+zi.rank+" "+zi.name+"</b><br><small style=\"color:#666\">"+zi.rec+"</small>"; }
   L.circleMarker([lat,lon],{
     radius:r,color:c,fillColor:c,fillOpacity:0.75,weight:0.5
   }).bindPopup(
@@ -12664,7 +12668,7 @@ TREES.forEach(t => {
     "Indice de atencion: "+probStr+"<br>"+
     "NDVI: "+ndviStr+"<br>"+
     "Area copa: "+areaStr+
-    (function(){var zi=getZoneInfo(tid);return zi?"<br><span style='display:inline-block;margin-top:5px;padding:2px 8px;border-radius:10px;background:"+zi.col+";color:#fff;font-size:0.78rem;font-weight:700>#"+zi.rank+" "+zi.name+"</span><br><span style='font-size:0.77rem;color:#666'>"+zi.rec+"</span>":""})()
+    zonaStr
   ).addTo(arbolLayer);
 });
 
